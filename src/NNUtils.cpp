@@ -127,9 +127,9 @@ vector<vector<double>> oneHotEncoding(const vector<vector<int>> & data,
 }
 
 
-vector<double> getPrediction(const vector<vector<double>> & A){
+vector<int> getPrediction(const vector<vector<double>> & A){
 
-    vector<double> v;
+    vector<int> v;
     for(int j = 0; j < A[0].size(); j++){
         int maxInt;
         double max = -INFINITY;

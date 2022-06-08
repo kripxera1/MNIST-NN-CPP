@@ -1,4 +1,5 @@
 #include <iostream>
+#include "bitmap.h"
 #include "algebra.h"
 #include "NNUtils.h"
 
@@ -12,7 +13,7 @@ int main(){
     //Hyperparameters
     double learnRate = 0.005;
     int batchSize = 100;
-    int nEpochs = 25;
+    int nEpochs = 20;
 
     cout << "Hyperparameters:\n"
          << "\n\tLearning rate:\t\t" << learnRate
@@ -53,18 +54,16 @@ int main(){
         for(int it = 0; it < nBatch; it++){
 
             //Labels and images are loaded and processed in batch
-            auto A0=loadBatch(trainingData,batchSize,it);
+            auto A0 = loadBatch(trainingData,batchSize,it);
             auto Y = oneHotEncoding(trainingData,batchSize,it);
             
             //pass forward
-            auto Z1=sum(dot(W1,A0),b1);
-            auto A1=leakyRelu(Z1);
-
-            auto Z2=sum(dot(W2,A1),b2);
-            auto A2=leakyRelu(Z2);
-
-            auto Z3=sum(dot(W3,A2),b3);
-            auto A3=softMax(Z3);
+            auto Z1 = sum(dot(W1,A0),b1);
+            auto A1 = leakyRelu(Z1);
+            auto Z2 = sum(dot(W2,A1),b2);
+            auto A2 = leakyRelu(Z2);
+            auto Z3 = sum(dot(W3,A2),b3);
+            auto A3 = softMax(Z3);
 
             //Accuracy update
             accuracy_ += accuracy(A3,Y)/nBatch;
@@ -108,18 +107,16 @@ int main(){
     for(int it = 0; it < nBatchTest; it++){
 
         //Labels and images are loaded and processed in batch
-        auto A0=loadBatch(testData,batchSize,it);
+        auto A0 = loadBatch(testData,batchSize,it);
         auto Y = oneHotEncoding(testData,batchSize,it);
         
         //Pass forward
-        auto Z1=sum(dot(W1,A0),b1);
-        auto A1=leakyRelu(Z1);
-
-        auto Z2=sum(dot(W2,A1),b2);
-        auto A2=leakyRelu(Z2);
-
-        auto Z3=sum(dot(W3,A2),b3);
-        auto A3=softMax(Z3);
+        auto Z1 = sum(dot(W1,A0),b1);
+        auto A1 = leakyRelu(Z1);
+        auto Z2 = sum(dot(W2,A1),b2);
+        auto A2 = leakyRelu(Z2);
+        auto Z3 = sum(dot(W3,A2),b3);
+        auto A3 = softMax(Z3);
 
         //Accuracy update
         accuracy_ += accuracy(A3,Y)/nBatchTest;
@@ -127,5 +124,47 @@ int main(){
 
     cout << "\tTest:\t" << accuracy_ << endl;
 
+    //Image classification example
+
+    //number of images to classify
+    int nImages = 100;
+    int index = 10;
+
+    int height = 28,
+        width  = 28;
+
+    //Image memory reserve
+    auto image = reserveSpaceImage(height,width);
+
+    auto A0 = loadBatch(testData,nImages,index);
+    auto Y = oneHotEncoding(testData,nImages,index);
+    
+    //Pass forward
+    auto Z1 = sum(dot(W1,A0),b1);
+    auto A1 = leakyRelu(Z1);
+    auto Z2 = sum(dot(W2,A1),b2);
+    auto A2 = leakyRelu(Z2);
+    auto Z3 = sum(dot(W3,A2),b3);
+    auto A3 = softMax(Z3);
+
+    auto prediction = getPrediction(A3);
+    
+    for(int images = 0; images < nImages; images++){
+        auto it = testData[(index*nImages)+images].begin();
+        for(int i = height-1; i >= 0; i--){
+            for(int j = 0; j < width; j++){
+                it++;
+                image[i][j][0] = (unsigned char)*it;
+                image[i][j][1] = (unsigned char)*it;
+                image[i][j][2] = (unsigned char)*it;
+            }
+        }
+        generateBitmapImage(image,height,width,(char*)
+        ((string(to_string(images))+"th image is "+
+        string(to_string(prediction[images]))+
+        ".bmp").c_str()));
+    }
+
+    
     return 0;
 }

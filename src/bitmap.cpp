@@ -4,6 +4,18 @@
 using namespace std;
 
 
+unsigned char *** reserveSpaceImage(int height, int width){
+
+    unsigned char *** image = new unsigned char **[height];
+    for(int i = 0; i < height; i++){
+        image[i] = new unsigned char * [width];
+        for(int j = 0; j < width; j++){
+            image[i][j] = new unsigned char[BYTES_PER_PIXEL];
+        }
+    }
+
+    return image;
+}
  
 void generateBitmapImage (unsigned char*** image, int height, int width, char* imageFileName)
 {

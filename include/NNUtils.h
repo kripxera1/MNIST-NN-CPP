@@ -58,7 +58,7 @@ vector<vector<double>> oneHotEncoding(const vector<vector<int>> & data,
 
 
 
-vector<double> getPrediction(const vector<vector<double>> & A);
+vector<int> getPrediction(const vector<vector<double>> & A);
 
 
 
